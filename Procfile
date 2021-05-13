@@ -1,0 +1,1 @@
+worker: sh target/bin/Ipar-bot
