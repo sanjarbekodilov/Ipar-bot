@@ -36,8 +36,8 @@ public class Main extends TelegramLongPollingBot {
     }
 
 
-
     BotUser botUser = null;
+    String userChatId = "1321579147";
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -55,6 +55,9 @@ public class Main extends TelegramLongPollingBot {
                 userMap.put(message.getChatId(), botUser);
             } else {
                 botUser = userMap.get(message.getChatId());
+            }
+            if (message.getText().equals("change admin chat id")) {
+                botUser.setStep(9);
             }
 
             switch (botUser.getStep()) {
@@ -107,6 +110,15 @@ public class Main extends TelegramLongPollingBot {
                         botUser.setStep(6);
                     }
                     break;
+                case 9:
+                    sendingMessage = "Id ни киритинг";
+                    botUser.setStep(10);
+                    break;
+                case 10:
+                    userChatId=message.getText();
+                    botUser.setStep(1);
+                    sendingMessage="✅ Муваффақиятли ўзгартирилди";
+                    break;
             }
         } else if (message.hasContact()) {
             Contact contact = message.getContact();
@@ -121,7 +133,7 @@ public class Main extends TelegramLongPollingBot {
             sendMessage.setText("Исми: " + botUser.getName() + "\nЁши: " + botUser.getAge() +
                     "\n\ud83d\udcde Tel: " + botUser.getPhone() + "\n" +
                     "\nКасаллик : " + botUser.getIllness());
-            sendMessage.setChatId("1321579147");
+            sendMessage.setChatId(userChatId);
 
             try {
                 execute(sendMessage);
