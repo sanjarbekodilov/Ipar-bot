@@ -46,15 +46,23 @@ public class Main extends TelegramLongPollingBot {
 
         String sendingMessage = "";
         SendMessage sendMessage = new SendMessage();
-
         if (message.hasText()) {
-
             if (message.getText().equals("/start")) {
                 botUser = new BotUser();
                 botUser.setStep(1);
                 userMap.put(message.getChatId(), botUser);
             } else {
                 botUser = userMap.get(message.getChatId());
+                if (botUser == null) {
+                    sendingMessage = "Серверда хатолик сабаб илтимос /start ни босинг. Юзага келган хатолик сабаб сиздан узр сўраймиз.";
+                    sendMessage.setText(sendingMessage);
+                    sendMessage.setChatId(update.getMessage().getChatId().toString());
+                    try {
+                        execute(sendMessage);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
             if (message.getText().equals("change admin chat id")) {
                 botUser.setStep(9);
@@ -66,27 +74,22 @@ public class Main extends TelegramLongPollingBot {
                     botUser.setStep(2);
                     break;
                 case 2:
-
                     botUser.setName(message.getText());
                     sendingMessage = "Ёшингизни киритинг";
                     botUser.setStep(3);
                     break;
                 case 3:
-
-
                     botUser.setAge(Integer.parseInt(message.getText()));
                     sendingMessage = "Сизни нима безовта қилябди? (Касаллик ҳақида ёзиб юборсангиз)";
                     botUser.setStep(4);
                     break;
                 case 4:
                     sendingMessage = "Сиз билан боғланиш учун телефон рақамингизни юборинг";
-
                     botUser.setDisease(message.getText());
                     setButton(sendMessage, botUser.getStep());
                     botUser.setStep(5);
                     break;
                 case 5:
-
                     botUser.setPhone(message.getText());
                     sendingMessage = "✅ Сизнинг ҳабарингизни админга жўнатилди" +
                             " тез орада сиз билан боғланишади";
@@ -115,11 +118,12 @@ public class Main extends TelegramLongPollingBot {
                     botUser.setStep(10);
                     break;
                 case 10:
-                    userChatId=message.getText();
+                    userChatId = message.getText();
                     botUser.setStep(1);
-                    sendingMessage="✅ Муваффақиятли ўзгартирилди";
+                    sendingMessage = "✅ Муваффақиятли ўзгартирилди";
                     break;
             }
+
         } else if (message.hasContact()) {
             Contact contact = message.getContact();
 
@@ -134,7 +138,6 @@ public class Main extends TelegramLongPollingBot {
                     "\n\ud83d\udcde Tel: " + botUser.getPhone() + "\n" +
                     "\nКасаллик : " + botUser.getIllness());
             sendMessage.setChatId(userChatId);
-
             try {
                 execute(sendMessage);
             } catch (TelegramApiException e) {
@@ -143,7 +146,6 @@ public class Main extends TelegramLongPollingBot {
             botUser.setStep(7);
             setButton(sendMessage, botUser.getStep());
         }
-
         sendMessage.setText(sendingMessage);
         sendMessage.setChatId(update.getMessage().getChatId().toString());
         try {
